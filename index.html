@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Google-opt-out-plugin by rdavio1</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Google-opt-out-plugin</h1>
+        <p>Automatically exported from code.google.com/p/google-opt-out-plugin</p>
+
+        <p class="view"><a href="https://github.com/rdavio1/google-opt-out-plugin">View the Project on GitHub <small>rdavio1/google-opt-out-plugin</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/rdavio1/google-opt-out-plugin/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/rdavio1/google-opt-out-plugin/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/rdavio1/google-opt-out-plugin">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <ul>
+<li>Copyright 2010 Google Inc.
+*</li>
+<li>Licensed under the Apache License, Version 2.0 (the "License");</li>
+<li>you may not use this file except in compliance with the License.</li>
+<li>You may obtain a copy of the License at
+*</li>
+<li>    <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
+*</li>
+<li>Unless required by applicable law or agreed to in writing, software</li>
+<li>distributed under the License is distributed on an "AS IS" BASIS,</li>
+<li>WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</li>
+<li>See the License for the specific language governing permissions and</li>
+<li>limitations under the License.
+*/</li>
+</ul>
+
+<p>var DOUBLECLICK_DOMAIN = 'doubleclick.net';
+var DOUBLECLICK_URL = 'http://' + DOUBLECLICK_DOMAIN;</p>
+
+<p>/**</p>
+
+<ul>
+<li>Set opt out cookie.
+*</li>
+<li>
+<a href="https://github.com/param" class="user-mention">@param</a> {string} store_id The cookie store the cookie should be stored in.
+*/
+function optOut(store_id) {
+chrome.cookies.get({name: 'id',
+                    url: DOUBLECLICK_URL,
+                    storeId: store_id}, function(cookie) {
+  if (!cookie || cookie.value != 'OPT_OUT') {
+    chrome.cookies.set({name: 'id',
+                        value: 'OPT_OUT',
+                        domain: '.' + DOUBLECLICK_DOMAIN,
+                        url: DOUBLECLICK_URL,
+                        expirationDate: 1920499146,
+                        storeId: store_id});
+  }
+});
+}</li>
+</ul>
+
+<p>/**</p>
+
+<ul>
+<li>Clear all cookies set for the domain doubleclick.net.
+*</li>
+<li>
+<a href="https://github.com/param" class="user-mention">@param</a> {string} store_id The cookie store from which the cookies should be</li>
+<li>                         removed.
+*/
+function clearCookies(store_id) {
+chrome.cookies.getAll({domain: DOUBLECLICK_DOMAIN,
+                       storeId: store_id},
+    function(cookies) {
+      for (var i = 0; i &lt; cookies.length; i++) {
+        chrome.cookies.remove({url: DOUBLECLICK_URL + cookies[i].path,
+                               name: cookies[i].name,
+                               storeId: store_id});
+      }
+    }
+);
+}</li>
+</ul>
+
+<p>/**</p>
+
+<ul>
+<li>Listener for cookies.onChanged.
+*</li>
+<li>
+<a href="https://github.com/param" class="user-mention">@param</a> evt {object} information about the cookie that was changed.
+*/
+function onCookieChanged(evt) {
+if (evt.removed &amp;&amp;
+    evt.cookie.domain == '.' + DOUBLECLICK_DOMAIN &amp;&amp;
+    evt.cookie.name == 'id') {
+  optOut(evt.cookie.storeId);
+}
+}</li>
+</ul>
+
+<p>chrome.cookies.getAllCookieStores(function(cookie_stores) {
+  for (var i = 0; i &lt; cookie_stores.length; i++) {
+    clearCookies(cookie_stores[i].id);
+    optOut(cookie_stores[i].id);
+  }
+});
+chrome.cookies.onChanged.addListener(onCookieChanged);</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/rdavio1">rdavio1</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
